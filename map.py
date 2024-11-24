@@ -3,6 +3,7 @@ import utils
 import pygame
 import character as chr
 import math
+from datetime import timedelta
 from typing import NamedTuple
 from textures import red_bricks, blue_bricks, green_bricks
 
@@ -41,7 +42,7 @@ class Map:
             3: blue_bricks.BlueBricks(),
         }
 
-    def update(self, char: chr.Character):
+    def update(self, time_delta: timedelta, char: chr.Character):
         plane = utils.normalize(utils.perpendicular(char.dire), 1)
         collisions: list[WallCollision] = []
         for x, r in enumerate(np.linspace(-1, 1, self.screen_w)):

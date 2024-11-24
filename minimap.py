@@ -1,6 +1,7 @@
 import pygame
 import utils
 import map as mp
+from datetime import timedelta
 
 
 class Minimap:
@@ -50,7 +51,7 @@ class Minimap:
         )
         pygame.draw.line(self.screen, color, from_point, to_point, 1)
 
-    def update(self, game_map: mp.Map):
+    def update(self, time_delta: timedelta, game_map: mp.Map):
         self.view = game_map.view
 
     def render(self):

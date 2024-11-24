@@ -1,5 +1,6 @@
 import numpy as np
 import pygame
+import datetime
 
 import pygame.locals as locals
 
@@ -50,7 +51,7 @@ wolf_guy = chr.Character(pos, dire, roomMap)
 
 time_delta = 0
 while True:
-    frame_start = pygame.time.get_ticks()
+    frame_start = datetime.datetime.now()
 
     for event in pygame.event.get():
         if event.type == locals.QUIT:
@@ -59,16 +60,16 @@ while True:
     pressed = pygame.key.get_pressed()
 
     if pressed[locals.K_LEFT]:
-        wolf_guy.update(chr.Action.MOVE_LEFT)
+        wolf_guy.update(time_delta, chr.Action.MOVE_LEFT)
     if pressed[locals.K_RIGHT]:
-        wolf_guy.update(chr.Action.MOVE_RIGHT)
+        wolf_guy.update(time_delta, chr.Action.MOVE_RIGHT)
     if pressed[locals.K_UP]:
-        wolf_guy.update(chr.Action.MOVE_FORWARD)
+        wolf_guy.update(time_delta, chr.Action.MOVE_FORWARD)
     if pressed[locals.K_DOWN]:
-        wolf_guy.update(chr.Action.MOVE_BACK)
+        wolf_guy.update(time_delta, chr.Action.MOVE_BACK)
 
-    game_map.update(wolf_guy)
-    minimap.update(game_map)
+    game_map.update(time_delta, wolf_guy)
+    minimap.update(time_delta, game_map)
 
     screen.fill(BLACK)
 
@@ -78,4 +79,4 @@ while True:
 
     pygame.display.update()
 
-    time_delta = pygame.time.get_ticks() - frame_start
+    time_delta = datetime.datetime.now() - frame_start

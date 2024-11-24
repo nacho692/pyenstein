@@ -1,4 +1,5 @@
 import utils
+from datetime import timedelta
 
 
 class Action(enumerate):
@@ -18,15 +19,20 @@ class Character:
     def rotate(self, angle: float):
         self.dire = utils.rotate(self.dire, angle)
 
-    def update(self, action: Action):
+    def update(self, time_delta: timedelta, action: Action):
+        # speed is 1 unit per second
+        speed = 1 * time_delta.total_seconds()
+        # rotation speed is 180 degrees per second
+        rotation_speed = 180 * time_delta.total_seconds()
+
         if action == Action.MOVE_LEFT:
-            self.rotate(-10)
+            self.rotate(-rotation_speed)
         elif action == Action.MOVE_RIGHT:
-            self.rotate(10)
+            self.rotate(rotation_speed)
         elif action == Action.MOVE_FORWARD:
-            self.pos += self.dire * 0.1
+            self.pos += self.dire * speed
         elif action == Action.MOVE_BACK:
-            self.pos -= self.dire * 0.1
+            self.pos -= self.dire * speed
 
     def render(self):
         pass
