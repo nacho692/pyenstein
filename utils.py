@@ -1,13 +1,16 @@
 import numpy as np
 import math
 
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-GREEN = (0, 255, 0)
-DARK_GREEN = (0, 127, 0)
-RED = (255, 0, 0)
-DARK_RED = (127, 0, 0)
-BLUE = (0, 0, 255)
+type Color = tuple[int, int, int]
+
+BLACK: Color = (0, 0, 0)
+WHITE: Color = (255, 255, 255)
+GREEN: Color = (0, 255, 0)
+DARK_GREEN: Color = (0, 127, 0)
+RED: Color = (255, 0, 0)
+DARK_RED: Color = (127, 0, 0)
+BLUE: Color = (0, 0, 255)
+
 
 # Constants for easy understanding of the code
 x = 0
@@ -90,6 +93,9 @@ def raycast(a, p, theMap):
             aMap[y] += step[y]
             side[x] -= side[y]
             side[y] = abs(delta[y])
+
+        if any([aMap[y] >= len(theMap), aMap[y] < 0, aMap[x] >= len(theMap[0]), aMap[x] < 0]):
+            return None, None
 
         if theMap[aMap[y]][aMap[x]] > 0:
             hit = True
