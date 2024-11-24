@@ -95,10 +95,10 @@ def raycast(a, p, theMap):
             side[y] = abs(delta[y])
 
         if any([aMap[y] >= len(theMap), aMap[y] < 0, aMap[x] >= len(theMap[0]), aMap[x] < 0]):
-            return None, None
+            return None, None, None
 
         if theMap[aMap[y]][aMap[x]] > 0:
             hit = True
             point = p + raydir * dist
 
-    return point, collision_side
+    return point, collision_side, (aMap[x], aMap[y])

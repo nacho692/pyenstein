@@ -1,7 +1,9 @@
+from textures.texture import Texture
 import pygame
 
 
-class Texture:
+class RedBricks(Texture):
+
     def __init__(self) -> None:
         self.h = 64
         self.w = 64
@@ -20,12 +22,3 @@ class Texture:
         overlay.fill((0, 0, 0))
         overlay.set_alpha(150)
         self.darken_surface.blit(overlay, (0, 0))
-
-    def val(self, x: int, y: int, h: int, w: int) -> pygame.Surface:
-        return self.surface.subsurface(x, y, w, h)
-
-    def darken_val(self, x: int, y: int, h: int, w: int) -> pygame.Surface:
-        return self.darken_surface.subsurface(x, y, w, h)
-
-    def size(self) -> tuple[int, int]:
-        return (self.w, self.h)
