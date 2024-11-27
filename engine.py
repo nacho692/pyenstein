@@ -1,9 +1,11 @@
 import numpy as np
 import pygame
 import datetime
+import math
 
 import pygame.locals as locals
 
+import fps
 import utils as u
 import character as chr
 import map as mp
@@ -26,7 +28,7 @@ screenW = 800
 
 # PyGame screen
 pygame.init()
-screen = pygame.display.set_mode((screenW, screenH), 0, 32)
+screen = pygame.display.set_mode((screenW, screenH), flags=0, depth=32)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
@@ -45,10 +47,14 @@ plane = u.perpendicular(dire)
 plane = u.normalize(plane, 1)
 
 
-game_map = mp.Map(screen, screenW, screenH, roomMap)
+fov = 120
+quality = 0.2
+rays = math.ceil(screenW * quality)
+game_map = mp.Map(screen, screenW, screenH, roomMap, fov, rays)
 minimap = mnp.Minimap(screen, screenW - len(roomMap[0]) * 32, 0, len(roomMap[0]), len(roomMap))
 wolf_guy = chr.Character(pos, dire, roomMap)
 
+c_fps = fps.FPS()
 time_delta = 0
 while True:
     frame_start = datetime.datetime.now()
@@ -77,6 +83,8 @@ while True:
     wolf_guy.render()
     minimap.render()
 
-    pygame.display.update()
+    pygame.display.flip()
 
     time_delta = datetime.datetime.now() - frame_start
+    c_fps.update(time_delta)
+    pygame.display.set_caption(f"Engine - FPS: {c_fps.get_fps()} - Rays: {rays}")

@@ -5,7 +5,7 @@ import character as chr
 import math
 from datetime import timedelta
 from typing import NamedTuple
-from textures import red_bricks, blue_bricks, green_bricks
+from textures import red_bricks, blue_bricks, green_bricks, green, texture
 
 
 class Side(enumerate):
@@ -30,22 +30,26 @@ class ViewCollision(NamedTuple):
 
 
 class Map:
-    def __init__(self, screen: pygame.Surface, screen_w, screen_h, room_map):
+    def __init__(self, screen: pygame.Surface, screen_w, screen_h, room_map, fov, rays: int):
         self.screen_w = screen_w
         self.screen_h = screen_h
         self.screen = screen
         self.room_map = room_map
         self.view: ViewCollision | None = None
-        self.texture_map = {
-            1: red_bricks.RedBricks(),
+        self.fov = fov
+        self.rays = rays
+        self.texture_map: dict[int, texture.Texture] = {
+            1: green.Green(),
             2: green_bricks.GreenBricks(),
             3: blue_bricks.BlueBricks(),
         }
 
     def update(self, time_delta: timedelta, char: chr.Character):
-        plane = utils.normalize(utils.perpendicular(char.dire), 1)
+        plane = utils.normalize(utils.perpendicular(char.dire), math.tan(math.radians(self.fov / 2)))
+
         collisions: list[WallCollision] = []
-        for x, r in enumerate(np.linspace(-1, 1, self.screen_w)):
+        size = math.ceil(self.screen_w / self.rays)
+        for x, r in enumerate(np.linspace(-1, 1, self.rays)):
             point, collision_side, collision_tile = utils.raycast(char.dire + plane * r, char.pos, self.room_map)
             if point is None:
                 continue
@@ -62,7 +66,7 @@ class Map:
                 else:
                     side = Side.NORTH
 
-            collisions.append(WallCollision(side, point, x, collision_tile))
+            collisions.append(WallCollision(side, point, x * size, collision_tile))
 
         self.view = ViewCollision(plane=plane, pos=char.pos, dire=char.dire, collisions=collisions)
 
@@ -76,6 +80,7 @@ class Map:
         cam1 = pos + plane
 
         blit_seq = []
+        size = math.ceil(self.screen_w / self.rays)
         for col in self.view.collisions:
 
             # Distance to camera plane (line)
@@ -100,6 +105,5 @@ class Map:
             else:
                 tex_surface = texture.val(y * texture.size()[0], 0, texture.size()[1], 1)
 
-            blit_seq.append((pygame.transform.scale(tex_surface, (1, h)), (col.x, self.screen_h / 2 - h / 2)))
-
+            blit_seq.append((pygame.transform.scale(tex_surface, (size, h)), (col.x, self.screen_h / 2 - h / 2)))
         self.screen.blits(blit_seq)
