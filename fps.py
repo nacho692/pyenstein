@@ -13,4 +13,6 @@ class FPS:
             self.sum -= self.queue.pop(0).total_seconds()
 
     def get_fps(self) -> float:
+        if self.sum == 0 or len(self.queue) == 0:
+            return 0
         return 1 / (self.sum / len(self.queue))

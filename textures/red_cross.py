@@ -2,7 +2,7 @@ from textures.texture import Texture
 import pygame
 
 
-class RedBricks(Texture):
+class RedCross(Texture):
 
     def __init__(self) -> None:
         self.h = 64
@@ -10,12 +10,8 @@ class RedBricks(Texture):
         self.surface = pygame.Surface((self.w, self.h))
         for x in range(self.w):
             for y in range(self.h):
-                color = 65536 * 192 * ((x % 16) and (y % 16))
-                r = (color >> 16) & 0xFF
-                g = (color >> 8) & 0xFF
-                b = color & 0xFF
-                # self.surface.set_at((x, y), (192, 0, 0))
-                self.surface.set_at((x, y), (r, g, b, 255))
+                color = 65536 * 254 * (x != y and x != (self.h - y))
+                self.surface.set_at((x, y), color)
 
         self.darken_surface = self.surface.copy()
         overlay = pygame.Surface(self.darken_surface.get_size())

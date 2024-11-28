@@ -1,3 +1,5 @@
+import numpy as np
+import numpy.typing as npt
 import pygame
 import utils
 import map as mp
@@ -40,7 +42,7 @@ class Minimap:
             1,
         )
 
-    def draw_ray(self, pos, point, color=utils.RED):
+    def draw_ray(self, pos: utils.Vector, point, color=utils.RED):
         from_point = (
             self.pos_x + int(pos[0] * self.block_size),
             self.pos_y + int(pos[1] * self.block_size),
@@ -60,4 +62,8 @@ class Minimap:
             self.draw_player(self.view.pos)
             for collision in self.view.collisions:
                 self.draw_ray(self.view.pos, collision.position)
-        self.draw_ray(self.view.pos - self.view.plane, self.view.pos + self.view.plane, utils.BLUE)
+            self.draw_ray(
+                self.view.dire + self.view.pos - self.view.plane,
+                self.view.dire + self.view.pos + self.view.plane,
+                utils.BLUE,
+            )

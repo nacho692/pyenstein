@@ -2,10 +2,10 @@ import numpy as np
 import pygame
 import datetime
 import math
-
+import fps
 import pygame.locals as locals
 
-import fps
+# import fps
 import utils as u
 import character as chr
 import map as mp
@@ -17,6 +17,14 @@ roomMap = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 0, 0, 0, 0, 0, 0, 0, 1],
     [1, 0, 0, 0, 2, 0, 3, 0, 1],
+    [1, 0, 0, 0, 2, 0, 0, 0, 1],
+    [1, 0, 0, 0, 2, 0, 0, 0, 1],
+    [1, 0, 0, 0, 2, 0, 0, 0, 1],
+    [1, 0, 0, 0, 2, 0, 0, 0, 1],
+    [1, 0, 0, 0, 2, 0, 0, 0, 1],
+    [1, 0, 0, 0, 2, 0, 0, 0, 1],
+    [1, 0, 0, 0, 2, 0, 0, 0, 1],
+    [1, 0, 0, 0, 2, 0, 0, 0, 1],
     [1, 0, 0, 0, 2, 0, 0, 0, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1],
 ]
@@ -47,15 +55,15 @@ plane = u.perpendicular(dire)
 plane = u.normalize(plane, 1)
 
 
-fov = 120
-quality = 0.2
+fov = 90
+quality = 1
 rays = math.ceil(screenW * quality)
-game_map = mp.Map(screen, screenW, screenH, roomMap, fov, rays)
+game_map = mp.Map(screen, roomMap, fov, rays)
 minimap = mnp.Minimap(screen, screenW - len(roomMap[0]) * 32, 0, len(roomMap[0]), len(roomMap))
 wolf_guy = chr.Character(pos, dire, roomMap)
 
 c_fps = fps.FPS()
-time_delta = 0
+time_delta = datetime.timedelta(seconds=0)
 while True:
     frame_start = datetime.datetime.now()
 
@@ -76,7 +84,7 @@ while True:
 
     game_map.update(time_delta, wolf_guy)
     minimap.update(time_delta, game_map)
-
+    c_fps.update(time_delta)
     screen.fill(BLACK)
 
     game_map.render()
@@ -84,7 +92,6 @@ while True:
     minimap.render()
 
     pygame.display.flip()
-
     time_delta = datetime.datetime.now() - frame_start
-    c_fps.update(time_delta)
+
     pygame.display.set_caption(f"Engine - FPS: {c_fps.get_fps()} - Rays: {rays}")

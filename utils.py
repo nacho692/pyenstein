@@ -1,6 +1,9 @@
 import numpy as np
+import typing
 import math
 
+
+type Vector[T: np.number] = np.ndarray[tuple[typing.Literal[1], typing.Literal[2]], np.dtype[T]]
 type Color = tuple[int, int, int]
 
 BLACK: Color = (0, 0, 0)
@@ -17,24 +20,32 @@ x = 0
 y = 1
 
 
+def distance(a: Vector[np.number], b: Vector[np.number]) -> np.number:
+    return np.linalg.norm(a - b)
+
+
 # Finds a perpendicular vector to a
 # Input: 2d vector a
 # Output: A vector b such that a*b = 0
-def perpendicular(a):
+def perpendicular(a: Vector[np.number]) -> Vector[np.number]:
     b = np.empty_like(a)
     b[0] = -a[1]
     b[1] = a[0]
     return b
 
 
+# Angle between two vectors in radians
+def angle(a: Vector[np.number], b: Vector[np.number]) -> Vector[np.number]:
+    return np.arccos(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))
+
+
 # Normalizes the input vector a to have the magnitude c
-def normalize(a, c):
-    a = np.array(a)
+def normalize(a: Vector[np.number], c: float) -> Vector[np.number]:
     return c * a / np.linalg.norm(a)
 
 
 # Rotates the 2d vector a by the angle beta clockwise.
-def rotate(a, beta):
+def rotate(a: Vector[np.number], beta: float) -> Vector[np.number]:
     theta = np.radians(beta)
     c, s = np.cos(theta), np.sin(theta)
     return np.array(((c, -s), (s, c))).dot(a)

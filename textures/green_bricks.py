@@ -10,7 +10,7 @@ class GreenBricks(Texture):
         self.surface = pygame.Surface((self.w, self.h))
         for x in range(self.w):
             for y in range(self.h):
-                color = 65536 * 192 * ((x % 16) & (y % 16))
+                color = 65536 * 192 * ((x % 16) and (y % 16))
                 r = (color >> 8) & 0xFF
                 g = (color >> 16) & 0xFF
                 b = color & 0xFF

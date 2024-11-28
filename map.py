@@ -1,11 +1,13 @@
 import numpy as np
+
 import utils
 import pygame
+import pygame.geometry as geo
 import character as chr
 import math
 from datetime import timedelta
 from typing import NamedTuple
-from textures import red_bricks, blue_bricks, green_bricks, green, texture
+import textures as txt
 
 
 class Side(enumerate):
@@ -17,31 +19,31 @@ class Side(enumerate):
 
 class WallCollision(NamedTuple):
     side: Side
-    position: np.array
+    position: utils.Vector
     x: int
     collision_tile: tuple[int, int]
 
 
 class ViewCollision(NamedTuple):
     collisions: list[WallCollision]
-    dire: np.array
-    pos: np.array
-    plane: np.array
+    dire: utils.Vector
+    pos: utils.Vector
+    plane: utils.Vector
 
 
 class Map:
-    def __init__(self, screen: pygame.Surface, screen_w, screen_h, room_map, fov, rays: int):
-        self.screen_w = screen_w
-        self.screen_h = screen_h
+    def __init__(self, screen: pygame.Surface, room_map, fov, rays: int):
         self.screen = screen
+        self.screen_w: int = self.screen.get_width()
+        self.screen_h: int = self.screen.get_height()
         self.room_map = room_map
         self.view: ViewCollision | None = None
         self.fov = fov
         self.rays = rays
-        self.texture_map: dict[int, texture.Texture] = {
-            1: green.Green(),
-            2: green_bricks.GreenBricks(),
-            3: blue_bricks.BlueBricks(),
+        self.texture_map: dict[int, txt.Texture] = {
+            1: txt.RedCross(),
+            2: txt.RedCross(),
+            3: txt.Green(),
         }
 
     def update(self, time_delta: timedelta, char: chr.Character):
@@ -49,7 +51,7 @@ class Map:
 
         collisions: list[WallCollision] = []
         size = math.ceil(self.screen_w / self.rays)
-        for x, r in enumerate(np.linspace(-1, 1, self.rays)):
+        for x, r in enumerate(np.linspace(-1, 1, self.rays + 1)):
             point, collision_side, collision_tile = utils.raycast(char.dire + plane * r, char.pos, self.room_map)
             if point is None:
                 continue
@@ -74,36 +76,65 @@ class Map:
         if self.view is None:
             return
 
-        plane = self.view.plane
+        camera_plane = self.view.plane
         pos = self.view.pos
-        cam0 = pos - plane
-        cam1 = pos + plane
+        cam0 = pos - camera_plane
+        cam1 = pos + camera_plane
 
-        blit_seq = []
         size = math.ceil(self.screen_w / self.rays)
-        for col in self.view.collisions:
+        blit_seq = []
 
-            # Distance to camera plane (line)
-            h = (
-                1
-                / np.linalg.norm(np.cross(cam0 - cam1, cam1 - col.position))
-                / np.linalg.norm(cam0 - cam1)
-                * self.screen_h
-            )
+        # Distance to camera plane (line)
+        def distance_to_camera_plane(point):
+            return 1 / np.linalg.norm(np.cross(cam0 - cam1, cam1 - point)) / np.linalg.norm(cam0 - cam1) * self.screen_h
 
+        for i, col in enumerate(self.view.collisions):
+            if i == len(self.view.collisions) - 1:
+                continue
+
+            h0 = distance_to_camera_plane(col.position)
             collision_tile = col.collision_tile
             texture_tile = self.room_map[collision_tile[1]][collision_tile[0]]
-            x, y = col.position - collision_tile
+            match col.side:
+                case Side.SOUTH:
+                    x = col.position[0] - int(col.position[0])
+                case Side.NORTH:
+                    x = 1 - (col.position[0] - int(col.position[0]))
+                case Side.EAST:
+                    x = col.position[1] - int(col.position[1])
+                case Side.WEST:
+                    x = 1 - (col.position[1] - int(col.position[1]))
+
             if x == 1:
                 x = 0
-            if y == 1:
-                y = 0
 
             texture = self.texture_map[texture_tile]
-            if col.side in (Side.NORTH, Side.SOUTH):
-                tex_surface = texture.darken_val(x * texture.size()[0], 0, texture.size()[1], 1)
+            next_col = self.next_col(i, size)
+            if next_col is None:
+                texture_width = (1 - x) * texture.size()[0]
             else:
-                tex_surface = texture.val(y * texture.size()[0], 0, texture.size()[1], 1)
+                d = utils.distance(next_col.position, col.position)
+                texture_width = min(d * texture.size()[0], (1 - x) * texture.size()[0])
 
-            blit_seq.append((pygame.transform.scale(tex_surface, (size, h)), (col.x, self.screen_h / 2 - h / 2)))
+            if col.side in (Side.NORTH, Side.SOUTH):
+                tex_surface = texture.darken_val(x * texture.size()[0], 0, texture.size()[1], math.ceil(texture_width))
+            else:
+                tex_surface = texture.val(x * texture.size()[0], 0, texture.size()[1], math.ceil(texture_width))
+
+            blit_seq.append(
+                (pygame.transform.scale(tex_surface, (size, float(h0))), (col.x, self.screen_h / 2 - h0 / 2))
+            )
         self.screen.blits(blit_seq)
+
+    def next_col(self, idx: int, size: int):
+        if self.view is None:
+            return None
+        current = self.view.collisions[idx]
+        if idx + 1 >= len(self.view.collisions):
+            return None
+        if self.view.collisions[idx + 1].side != current.side:
+            return None
+        if abs(current.x + size - self.view.collisions[idx + 1].x) > 0.001:
+            return None
+
+        return self.view.collisions[idx + 1]
