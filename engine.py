@@ -31,8 +31,8 @@ roomMap = [
 
 
 blockSize = 32
-screenH = 600
-screenW = 800
+screenW = 640
+screenH = 480
 
 # PyGame screen
 pygame.init()
@@ -56,9 +56,10 @@ plane = u.normalize(plane, 1)
 
 
 fov = 90
-quality = 1
-rays = math.ceil(screenW * quality)
-game_map = mp.Map(screen, roomMap, fov, rays)
+quality = 0.5
+drawing_canvas = pygame.Surface((640, 480))
+rays = math.ceil(drawing_canvas.get_width() * quality)
+game_map = mp.Map(drawing_canvas, roomMap, fov, rays)
 minimap = mnp.Minimap(screen, screenW - len(roomMap[0]) * 32, 0, len(roomMap[0]), len(roomMap))
 wolf_guy = chr.Character(pos, dire, roomMap)
 
@@ -85,10 +86,12 @@ while True:
     game_map.update(time_delta, wolf_guy)
     minimap.update(time_delta, game_map)
     c_fps.update(time_delta)
-    screen.fill(BLACK)
+
+    drawing_canvas.fill(BLACK)
 
     game_map.render()
     wolf_guy.render()
+    screen.blit(pygame.transform.scale(drawing_canvas, (screenW, screenH)))
     minimap.render()
 
     pygame.display.flip()
