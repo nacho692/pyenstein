@@ -8,11 +8,11 @@ from datetime import timedelta
 
 class Minimap:
 
-    def __init__(self, screen, pos_x, pos_y, map_w, map_h):
+    def __init__(self, screen: pygame.Surface, map_w, map_h):
         self.screen = screen
-        self.pos_x = pos_x
-        self.pos_y = pos_y
         self.block_size = 32
+        self.pos_x = screen.get_width() - map_w * self.block_size
+        self.pos_y = 0
         self.map_w = map_w
         self.map_h = map_h
         self.view: mp.ViewCollision | None = None
@@ -55,6 +55,8 @@ class Minimap:
 
     def update(self, time_delta: timedelta, game_map: mp.Map):
         self.view = game_map.view
+        self.pos_x = self.screen.get_width() - self.map_w * self.block_size
+        self.pos_y = 0
 
     def render(self):
         self.draw_grid()

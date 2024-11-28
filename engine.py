@@ -36,7 +36,7 @@ screenH = 480
 
 # PyGame screen
 pygame.init()
-screen = pygame.display.set_mode((screenW, screenH), flags=0, depth=32)
+screen = pygame.display.set_mode((screenW, screenH), flags=pygame.RESIZABLE, depth=32)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
@@ -56,11 +56,11 @@ plane = u.normalize(plane, 1)
 
 
 fov = 90
-quality = 0.5
+quality = 0.05
 drawing_canvas = pygame.Surface((640, 480))
 rays = math.ceil(drawing_canvas.get_width() * quality)
 game_map = mp.Map(drawing_canvas, roomMap, fov, rays)
-minimap = mnp.Minimap(screen, screenW - len(roomMap[0]) * 32, 0, len(roomMap[0]), len(roomMap))
+minimap = mnp.Minimap(screen, len(roomMap[0]), len(roomMap))
 wolf_guy = chr.Character(pos, dire, roomMap)
 
 c_fps = fps.FPS()
@@ -91,7 +91,7 @@ while True:
 
     game_map.render()
     wolf_guy.render()
-    screen.blit(pygame.transform.scale(drawing_canvas, (screenW, screenH)))
+    screen.blit(pygame.transform.scale(drawing_canvas, screen.get_size()))
     minimap.render()
 
     pygame.display.flip()

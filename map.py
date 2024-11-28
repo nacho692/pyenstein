@@ -95,20 +95,14 @@ class Map:
             h0 = distance_to_camera_plane(col.position)
             collision_tile = col.collision_tile
             texture_tile = self.room_map[collision_tile[1]][collision_tile[0]]
-            match col.side:
-                case Side.SOUTH:
-                    x = col.position[0] - int(col.position[0])
-                case Side.NORTH:
-                    x = 1 - (col.position[0] - int(col.position[0]))
-                case Side.EAST:
-                    x = col.position[1] - int(col.position[1])
-                case Side.WEST:
-                    x = 1 - (col.position[1] - int(col.position[1]))
-
-            if x == 1:
-                x = 0
-
             texture = self.texture_map[texture_tile]
+
+            prev_col = self.prev_col(i, size)
+            if prev_col is None or prev_col.collision_tile != col.collision_tile:
+                x = 0
+            else:
+                x = self.hit_position(col)
+
             next_col = self.next_col(i, size)
             if next_col is None:
                 texture_width = (1 - x) * texture.size()[0]
@@ -117,14 +111,34 @@ class Map:
                 texture_width = min(d * texture.size()[0], (1 - x) * texture.size()[0])
 
             if col.side in (Side.NORTH, Side.SOUTH):
-                tex_surface = texture.darken_val(x * texture.size()[0], 0, texture.size()[1], math.ceil(texture_width))
+                tex_surface = texture.darken_val(
+                    math.floor(x * texture.size()[0]), 0, texture.size()[1], math.ceil(texture_width)
+                )
             else:
-                tex_surface = texture.val(x * texture.size()[0], 0, texture.size()[1], math.ceil(texture_width))
+                tex_surface = texture.val(
+                    math.floor(x * texture.size()[0]), 0, texture.size()[1], math.ceil(texture_width)
+                )
 
             blit_seq.append(
                 (pygame.transform.scale(tex_surface, (size, float(h0))), (col.x, self.screen_h / 2 - h0 / 2))
             )
+
         self.screen.blits(blit_seq)
+
+    def hit_position(self, col: WallCollision) -> float:
+        match col.side:
+            case Side.SOUTH:
+                x = col.position[0] - int(col.position[0])
+            case Side.NORTH:
+                x = 1 - (col.position[0] - int(col.position[0]))
+            case Side.EAST:
+                x = col.position[1] - int(col.position[1])
+            case Side.WEST:
+                x = 1 - (col.position[1] - int(col.position[1]))
+
+        if x >= 1:
+            x = 0
+        return x
 
     def next_col(self, idx: int, size: int):
         if self.view is None:
@@ -138,3 +152,16 @@ class Map:
             return None
 
         return self.view.collisions[idx + 1]
+
+    def prev_col(self, idx: int, size: int):
+        if self.view is None:
+            return None
+        current = self.view.collisions[idx]
+        if idx - 1 < 0:
+            return None
+        if self.view.collisions[idx - 1].side != current.side:
+            return None
+        if abs(current.x - size - self.view.collisions[idx - 1].x) > 0.001:
+            return None
+
+        return self.view.collisions[idx - 1]
