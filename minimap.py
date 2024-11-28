@@ -1,5 +1,3 @@
-import numpy as np
-import numpy.typing as npt
 import pygame
 import utils
 import map as mp
