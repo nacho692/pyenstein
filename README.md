@@ -12,7 +12,8 @@ python engine.py
 
 TODO (in no particular order):
 
-* Use opengl instead of pygame for rendering
+* ~~Use opengl instead of pygame for rendering~~: It goes against the initial intent of the project, which is avoiding offloading everything to a library
+* Rethink how textures are scaled and rendered on wall blocks. I think it is necessary to consider character direction.
 * Add support for side based textures:
     * Maybe generating a mapping between numbers and customized textures/objects so maps stay simple
     * Raycasting side detection is already implemented
