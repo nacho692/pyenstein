@@ -19,7 +19,7 @@ class Character:
     def rotate(self, angle: float):
         self.dire = utils.rotate(self.dire, angle)
 
-    def update(self, time_delta: timedelta, action: Action):
+    def update(self, time_delta: timedelta, action: Action | int):
         # speed is 2 unit per second
         speed = 2 * time_delta.total_seconds()
         # rotation speed is 180 degrees per second

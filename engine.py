@@ -1,7 +1,6 @@
 import numpy as np
 import pygame
 import datetime
-import math
 import fps
 import pygame.locals as locals
 
@@ -10,6 +9,7 @@ import utils as u
 import character as chr
 import map as mp
 import minimap as mnp
+import options as opt
 
 # This is the map as seen from above, I consider the first block as position
 # (x,y) = (0,0)
@@ -29,15 +29,11 @@ roomMap = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1],
 ]
 
-
-blockSize = 32
-screenW = 800
-screenH = 600
-fov = 90
+opts = opt.Options()
 
 # PyGame screen
 pygame.init()
-screen = pygame.display.set_mode((screenW, screenH), flags=pygame.RESIZABLE, depth=32)
+screen = pygame.display.set_mode((opts.screen_w, opts.screen_h), flags=pygame.RESIZABLE, depth=32)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
@@ -56,8 +52,8 @@ plane = u.perpendicular(dire)
 plane = u.normalize(plane, 1)
 
 
-drawing_canvas = pygame.Surface((640, 480))
-game_map = mp.Map(drawing_canvas, roomMap, fov)
+drawing_canvas = pygame.Surface((opts.internal_screen_w, opts.internal_screen_h))
+game_map = mp.Map(drawing_canvas, roomMap, fov=opts.fov)
 minimap = mnp.Minimap(screen, len(roomMap[0]), len(roomMap))
 wolf_guy = chr.Character(pos, dire, roomMap)
 
