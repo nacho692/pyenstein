@@ -19,7 +19,9 @@ class Engine:
     def run(self):
         # PyGame screen
         pygame.init()
-        screen = pygame.display.set_mode((opts.screen_w, opts.screen_h), flags=pygame.RESIZABLE, depth=32)
+        screen = pygame.display.set_mode(
+            (opts.screen_w, opts.screen_h), flags=pygame.RESIZABLE | pygame.DOUBLEBUF, depth=32
+        )
         pygame.display.set_caption("Engine")
 
         # Starting position
@@ -84,13 +86,13 @@ roomMap = [
     [1, 0, 0, 0, 2, 0, 3, 0, 1],
     [1, 0, 0, 0, 2, 0, 0, 0, 1],
     [1, 0, 0, 0, 2, 0, 0, 0, 1],
-    [1, 0, 0, 0, 2, 0, 0, 0, 1],
-    [1, 0, 0, 0, 2, 0, 0, 0, 1],
-    [1, 0, 0, 0, 2, 0, 0, 0, 1],
-    [1, 0, 0, 0, 2, 0, 0, 0, 1],
-    [1, 0, 0, 0, 2, 0, 0, 0, 1],
-    [1, 0, 0, 0, 2, 0, 0, 0, 1],
-    [1, 0, 0, 0, 2, 0, 0, 0, 1],
+    [1, -1, -1, -1, 2, 0, 0, 0, 1],
+    [1, 0, -1, 0, 2, 0, 0, 0, 1],
+    [1, -1, 0, -1, 2, 0, 0, 0, 1],
+    [1, 0, -1, 0, 2, 0, 0, 0, 1],
+    [1, -1, 0, -1, 2, 0, 0, 0, 1],
+    [1, 0, -1, 0, 2, 0, 0, 0, 1],
+    [1, -1, 0, -1, 2, 0, 0, 0, 1],
     [1, 1, 1, 1, 1, 1, 1, 1, 1],
 ]
 

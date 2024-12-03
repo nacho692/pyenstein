@@ -6,6 +6,7 @@ import math
 type Vector[T: np.number] = np.ndarray[tuple[typing.Literal[1], typing.Literal[2]], np.dtype[T]]
 type Color = tuple[int, int, int]
 
+GRAY: Color = (125, 125, 125)
 BLACK: Color = (0, 0, 0)
 WHITE: Color = (255, 255, 255)
 GREEN: Color = (0, 255, 0)

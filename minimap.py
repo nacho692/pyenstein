@@ -60,8 +60,10 @@ class Minimap:
         self.draw_grid()
         if self.view is not None:
             self.draw_player(self.view.pos)
-            for collision in self.view.collisions:
-                self.draw_ray(self.view.pos, collision.position)
+            # for collision in self.view.collisions:
+            #     self.draw_ray(self.view.pos, collision.position)
+            # for ray in self.view.floor_rays:
+            #     self.draw_ray(ray.left_collision, ray.right_collision, utils.GREEN)
             self.draw_ray(
                 self.view.dire + self.view.pos - self.view.plane,
                 self.view.dire + self.view.pos + self.view.plane,
