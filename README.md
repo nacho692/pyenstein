@@ -11,13 +11,13 @@ python engine.py
 
 
 TODO (in no particular order):
-
-* ~~Use opengl instead of pygame for rendering~~: It goes against the initial intent of the project, which is avoiding offloading everything to a library
-* Rethink how textures are scaled and rendered on wall blocks. I think it is necessary to consider character direction.
+* Check out floor warping on textures far away
+* Speed up floor texturing, rendering loop is pretty slow, and not only because of the blit
+* Fix warping on textures on which camera plane intersects, mostly when close to walls
+* Add ceiling textures
 * Add support for side based textures:
     * Maybe generating a mapping between numbers and customized textures/objects so maps stay simple
     * Raycasting side detection is already implemented
 * Add physics for player movement
 * Add collision detection
-* Implement floor and ceiling textures, maybe a custom object in the map that indicates both textures. No idea how to implement it, raycast towards the floor from a particular height?
-* Implement shaders on textures
+* Implement shaders on textures (super nice to have, don't know how to tackle performance wise)
